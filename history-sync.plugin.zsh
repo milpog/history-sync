@@ -18,7 +18,11 @@ alias zhpl=history_sync_pull
 alias zhps=history_sync_push
 alias zhsync="history_sync_pull && history_sync_push"
 
-GIT=$(which git)
+if which hub > /dev/null; then
+    GIT=$(which hub)
+else
+    GIT=$(which git)
+fi
 GPG=$(which gpg)
 
 ZSH_HISTORY_PROJ="${HOME}/.zsh_history_proj"
@@ -27,6 +31,7 @@ ZSH_HISTORY_FILE="${HOME}/${ZSH_HISTORY_FILE_NAME}"
 ZSH_HISTORY_FILE_ENC_NAME="zsh_history"
 ZSH_HISTORY_FILE_ENC="${ZSH_HISTORY_PROJ}/${ZSH_HISTORY_FILE_ENC_NAME}"
 ZSH_HISTORY_FILE_DECRYPT_NAME="zsh_history_decrypted"
+ZSH_HISTORY_MERGE="${HOME}/.oh-my-zsh/custom/plugins/history-sync/history-merge.py"
 GIT_COMMIT_MSG="latest $(date)"
 
 function _print_git_error_msg() {
@@ -78,7 +83,7 @@ function history_sync_pull() {
     fi
 
     # Merge
-    cat "$ZSH_HISTORY_FILE" "$ZSH_HISTORY_FILE_DECRYPT_NAME" | awk '/:[0-9]/ { if(s) { print s } s=$0 } !/:[0-9]/ { s=s"\n"$0 } END { print s }' | LC_ALL=C sort -u > "$ZSH_HISTORY_FILE"
+    python3 "$ZSH_HISTORY_MERGE" "$ZSH_HISTORY_FILE" "$ZSH_HISTORY_FILE_DECRYPT_NAME" > "$ZSH_HISTORY_FILE"
     rm  "$ZSH_HISTORY_FILE_DECRYPT_NAME"
     cd  "$DIR"
 }
