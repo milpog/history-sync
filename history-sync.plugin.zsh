@@ -14,9 +14,9 @@
 #
 autoload -U colors && colors
 
-alias zhpl=history_sync_pull
-alias zhps=history_sync_push
-alias zhsync="history_sync_pull && history_sync_push"
+# alias zhpl=history_sync_pull
+# alias zhps=history_sync_push
+# alias zhsync="history_sync_pull && history_sync_push"
 
 if which hub > /dev/null; then
     GIT=$(which hub)
@@ -83,7 +83,8 @@ function history_sync_pull() {
     fi
 
     # Merge
-    python3 "$ZSH_HISTORY_MERGE" "$ZSH_HISTORY_FILE" "$ZSH_HISTORY_FILE_DECRYPT_NAME" > "$ZSH_HISTORY_FILE"
+    python3 "$ZSH_HISTORY_MERGE" "$ZSH_HISTORY_FILE" "$ZSH_HISTORY_FILE_DECRYPT_NAME" > "$ZSH_HISTORY_FILE.tmp"
+    mv "$ZSH_HISTORY_FILE.tmp" "$ZSH_HISTORY_FILE"
     rm  "$ZSH_HISTORY_FILE_DECRYPT_NAME"
     cd  "$DIR"
 }
